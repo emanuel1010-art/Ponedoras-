@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ponedoras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+  --bg:#DCE1D4; --surface:#F7F8F3; --input:#FFFFFF;
+  --ink:#1B2E20; --ink2:#4B5C50; --line:#BCC5B2;
+  --tray:#C6CEBA; --dimple:#B3BDA6; --shade:rgba(30,45,30,.28);
+  --egg:#F3E7CF; --egg-edge:#D9C7A0;
+  --yolk:#EFA600; --on-yolk:#2B2000; --comb:#B8322A; --grass:#2F6B31; --focus:#2456C8;
+  --note-bg:#F6E3A8; --note-ink:#3A2A00;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#111913; --surface:#1A251D; --input:#101812;
+    --ink:#E6EEE3; --ink2:#A7B5AA; --line:#2E3D32;
+    --tray:#243128; --dimple:#0F1711; --shade:rgba(0,0,0,.55);
+    --egg:#EFE3C8; --egg-edge:#BFAE87;
+    --yolk:#F2B01E; --on-yolk:#2B2000; --comb:#E5675A; --grass:#79BF75; --focus:#9DBBFF;
+    --note-bg:#3A3117; --note-ink:#F5E4AE;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#111913; --surface:#1A251D; --input:#101812;
+  --ink:#E6EEE3; --ink2:#A7B5AA; --line:#2E3D32;
+  --tray:#243128; --dimple:#0F1711; --shade:rgba(0,0,0,.55);
+  --egg:#EFE3C8; --egg-edge:#BFAE87;
+  --yolk:#F2B01E; --on-yolk:#2B2000; --comb:#E5675A; --grass:#79BF75; --focus:#9DBBFF;
+  --note-bg:#3A3117; --note-ink:#F5E4AE;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.45 'Public Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;padding-bottom:88px}
+body.lock{overflow:hidden}
+h1,h2,h3,.big,.fig b{font-family:'Bricolage Grotesque','Public Sans',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;margin:0}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.app{max-width:640px;margin:0 auto;padding:0 16px}
+
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 0 6px}
+.top h1{font-size:32px;font-weight:800;letter-spacing:-.02em;line-height:1.05}
+.sub{margin:4px 0 0;color:var(--ink2);font-size:15px}
+.icon-btn{background:none;border:0;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:var(--ink);flex:none}
+.icon-btn svg{width:24px;height:24px}
+main{padding:6px 0 24px}
+
+.hero{background:var(--surface);border-radius:24px;padding:18px 16px 16px;margin-top:8px}
+.big{font-size:60px;font-weight:800;line-height:1;letter-spacing:-.03em}
+.big.sm{font-size:40px}
+.big-label{margin:6px 0 0;font-weight:600;font-size:17px}
+.hero .muted{margin:4px 0 14px}
+.tray{display:grid;grid-template-columns:repeat(var(--cols,6),1fr);gap:9px 7px;padding:14px;background:var(--tray);border-radius:22px 22px 14px 14px}
+.cell{aspect-ratio:5/6;border-radius:50% 50% 48% 48%/58% 58% 42% 42%;background:var(--dimple);box-shadow:inset 0 3px 4px var(--shade)}
+.cell.egg{background:radial-gradient(circle at 35% 28%,#fff 0,var(--egg) 42%,var(--egg-edge) 100%);box-shadow:0 2px 3px var(--shade)}
+.prog{height:10px;border-radius:6px;background:var(--dimple);overflow:hidden;margin-top:14px}
+.prog i{display:block;height:100%;background:var(--yolk);border-radius:6px}
+.prog-l{display:flex;justify-content:space-between;color:var(--ink2);font-size:13px;margin-top:6px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:12px 20px;border-radius:14px;border:0;background:var(--yolk);color:var(--on-yolk);font-weight:700;font-size:16px}
+.btn.wide{width:100%}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.small{min-height:40px;padding:8px 14px;font-size:15px;border-radius:12px}
+.btn.danger{background:transparent;color:var(--comb);border:1.5px solid var(--comb)}
+.btn.danger.armed{background:var(--comb);color:#fff}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px}
+.hero .btn{margin-top:14px}
+
+.block{padding:20px 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:0}
+.block h2{font-size:20px;font-weight:700;line-height:1.2;margin-bottom:12px}
+.block-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.block-head h2{margin:0}
+.muted{color:var(--ink2);font-size:14px}
+.figs{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px}
+.fig b{display:block;font-size:28px;font-weight:700;line-height:1.1;letter-spacing:-.01em}
+.fig span{color:var(--ink2);font-size:14px}
+.pos{color:var(--grass)} .neg{color:var(--comb)}
+.note{background:var(--note-bg);color:var(--note-ink);border-radius:12px;padding:12px 14px;margin:0 0 10px;font-size:15px}
+.note b{font-weight:700}
+.link{background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-weight:600}
+.empty{padding:14px 0;color:var(--ink2)}
+
+.row{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.row:last-child{border-bottom:0}
+.row-main{min-width:0;flex:1}
+.row-main strong{display:block;font-weight:600}
+.row-main .muted{display:block;overflow:hidden;text-overflow:ellipsis}
+.row-side{text-align:right;flex:none;font-weight:700}
+.row-side .muted{display:block;font-weight:400}
+.task{cursor:default;padding:4px 0}
+.task .row-main{cursor:pointer;padding:8px 0}
+.task.done .row-main strong{text-decoration:line-through;color:var(--ink2)}
+.check{width:44px;height:44px;background:none;border:0;position:relative;flex:none;margin-left:-8px}
+.check::before{content:'';position:absolute;inset:8px;border-radius:50%;border:2px solid var(--ink2)}
+.check[aria-pressed="true"]::before{background:var(--grass);border-color:var(--grass)}
+.check[aria-pressed="true"]::after{content:'';position:absolute;left:17px;top:12px;width:8px;height:15px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg)}
+
+.seg{display:inline-grid;grid-auto-flow:column;background:var(--tray);border-radius:12px;padding:3px;margin-bottom:12px}
+.seg button{border:0;background:none;padding:9px 20px;border-radius:10px;font-weight:600}
+.seg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 2px var(--shade)}
+
+.chart{width:100%;height:auto;display:block}
+.chart .bar{fill:var(--yolk)} .chart .bar0{fill:var(--dimple)}
+.chart text{fill:var(--ink2);font:600 10px 'Public Sans',system-ui,sans-serif}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.tabs-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.tab{background:none;border:0;padding:8px 2px 7px;color:var(--ink2);font-weight:600;font-size:12px;line-height:1.1;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:58px}
+.tab .ic{display:grid;place-items:center;width:52px;height:30px;border-radius:15px}
+.tab .ic svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--ink)}
+.tab[aria-current="page"] .ic{background:var(--yolk);color:var(--on-yolk)}
+
+.sheet-back{position:fixed;inset:0;z-index:40;background:rgba(8,16,10,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet{width:100%;max-width:640px;max-height:92%;overflow:auto;background:var(--surface);border-radius:22px 22px 0 0;padding:16px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sheet-head h2{font-size:22px;font-weight:700}
+.sheet-actions{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.fld{margin:0 0 14px}
+.fld label,.fld .lbl{display:block;font-weight:600;font-size:15px;margin-bottom:6px}
+.fld .hint{display:block;color:var(--ink2);font-size:13px;margin-top:5px}
+.inp{width:100%;font:inherit;font-size:16px;padding:12px;min-height:48px;border:1.5px solid var(--line);border-radius:10px;background:var(--input);color:var(--ink)}
+textarea.inp{min-height:84px;resize:vertical}
+.stepper{display:grid;grid-template-columns:52px 1fr 52px;gap:8px}
+.stepper .inp{text-align:center;font-weight:700;font-size:20px}
+.step{border:1.5px solid var(--line);background:var(--input);border-radius:10px;font-size:24px;font-weight:700;min-height:48px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{border:1.5px solid var(--line);background:transparent;border-radius:999px;padding:6px 12px;font-size:14px;font-weight:500;min-height:36px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.err{color:var(--comb);font-weight:600;margin:6px 0 0;min-height:0}
+.sect{font-weight:700;margin:18px 0 8px;font-size:16px}
+
+#toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:12px;font-size:15px;font-weight:500;z-index:60;max-width:88%;text-align:center;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div>
+      <h1 id="title">Ponedoras</h1>
+      <p class="sub" id="subtitle"></p>
+    </div>
+    <button class="icon-btn" data-act="settings" aria-label="Ajustes" id="gear"></button>
+  </header>
+  <main id="main"></main>
+</div>
+<nav class="tabs" aria-label="Secciones"><div class="tabs-in" id="tabs"></div></nav>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- utilidades ---------- */
+var pad=function(n){return String(n).padStart(2,'0');};
+var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});};
+var num=function(v){var n=parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(n)?n:0;};
+var sum=function(a,k){return a.reduce(function(t,x){return t+(+x[k]||0);},0);};
+var clone=function(o){return JSON.parse(JSON.stringify(o));};
+var uid=function(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);};
+var fmt=function(n,d){d=d||0;return Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});};
+var money=function(n){return (n<0?'\u2212':'')+'B/. '+fmt(Math.abs(n),2);};
+var pct=function(x){return Math.round(x*100)+'%';};
+var DIAS=['dom','lun','mar','mié','jue','vie','sáb'];
+var MESES=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function ymd(s){var p=s.split('-').map(Number);return Date.UTC(p[0],p[1]-1,p[2]);}
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function diffDays(a,b){return Math.round((ymd(a)-ymd(b))/864e5);}
+function addDays(s,n){var d=new Date(ymd(s)+n*864e5);return d.getUTCFullYear()+'-'+pad(d.getUTCMonth()+1)+'-'+pad(d.getUTCDate());}
+function fechaCorta(s){var d=new Date(ymd(s));return DIAS[d.getUTCDay()]+' '+d.getUTCDate()+' '+MESES[d.getUTCMonth()];}
+function fechaDia(s){var d=new Date(ymd(s));return d.getUTCDate()+' '+MESES[d.getUTCMonth()];}
+var byFechaDesc=function(a,b){return a.fecha<b.fecha?1:a.fecha>b.fecha?-1:0;};
+
+/* ---------- datos ---------- */
+var DEF_CONFIG={
+  nombre:'Ponedoras',
+  llegada:'2026-06-12',
+  edadLlegadaDias:0,
+  avesIniciales:30,
+  semanaPostura:19,
+  precioDocena:3.75,
+  alertaAlimentoDias:7,
+  fases:[
+    {id:'inicio',nombre:'Inicio',desde:1,gramos:25},
+    {id:'crecimiento',nombre:'Crecimiento',desde:7,gramos:55},
+    {id:'desarrollo',nombre:'Desarrollo',desde:13,gramos:80},
+    {id:'postura',nombre:'Postura',desde:17,gramos:115}
+  ]
+};
+var TAREAS_BASE=[
+  ['sanidad','Newcastle + Bronquitis (1ª dosis)',1],
+  ['sanidad','Gumboro (1ª dosis)',2],
+  ['sanidad','Newcastle + Bronquitis (refuerzo)',4],
+  ['sanidad','Gumboro (refuerzo)',4],
+  ['sanidad','Viruela aviar',7],
+  ['sanidad','Coriza infecciosa (1ª dosis)',9],
+  ['sanidad','Desparasitación',10],
+  ['sanidad','Newcastle (refuerzo)',12],
+  ['manejo','Cambio a alimento de Desarrollo: mezclar 3 a 4 días',13],
+  ['manejo','Instalar nidales (1 por cada 4 a 5 gallinas) y perchas',15],
+  ['sanidad','Coriza infecciosa (2ª dosis)',15],
+  ['sanidad','Desparasitación antes de la postura',16],
+  ['manejo','Cambio a alimento de Postura: mezclar 3 a 4 días',17]
+];
+var CATS={Aves:'inv',Infraestructura:'inv',Equipo:'inv',Salud:'op',Insumos:'op',Transporte:'op',Otros:'op'};
+var KEYS=['config','diario','compras','gastos','ventas','salud'];
+var S={config:clone(DEF_CONFIG),diario:[],compras:[],gastos:[],ventas:[],salud:null};
+
+function seedSalud(){return TAREAS_BASE.map(function(t){return {id:uid(),tipo:t[0],nombre:t[1],semana:t[2],hecho:false,fechaHecho:'',nota:''};});}
+function normalize(){
+  var c=Object.assign(clone(DEF_CONFIG),S.config||{});
+  if(!Array.isArray(c.fases)||!c.fases.length)c.fases=clone(DEF_CONFIG.fases);
+  S.config=c;
+  ['diario','compras','gastos','ventas'].forEach(function(k){if(!Array.isArray(S[k]))S[k]=[];});
+  if(!Array.isArray(S.salud))S.salud=seedSalud();
+}
+
+/* ---------- guardado (nube con respaldo local) ---------- */
+var DB=null,chain={},pendingWrites=0,storageMode='local',hasLocal={};
+function lsGet(k){try{var v=localStorage.getItem('ponedoras1:'+k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem('ponedoras1:'+k,JSON.stringify(v));}catch(e){}}
+function wrap(k){return clone(k==='config'?S.config:{items:S[k]||[]});}
+function unwrap(k,d){return k==='config'?clone(d):clone(d.items||[]);}
+function save(k){
+  lsSet(k,S[k]);
+  if(!DB)return;
+  pendingWrites++;
+  chain[k]=(chain[k]||Promise.resolve()).then(function(){return DB.doc('ponedoras/'+k).set(wrap(k));}).catch(function(){
+    toast('No se pudo guardar en la nube. Queda guardado en este dispositivo.');
+  }).then(function(){pendingWrites--;});
+}
+function commit(k){save(k);render();}
+async function loadFromDb(){
+  var missing=[];
+  for(var i=0;i<KEYS.length;i++){
+    var k=KEYS[i];
+    var snap=await DB.doc('ponedoras/'+k).get();
+    if(snap.exists){S[k]=unwrap(k,snap.data());lsSet(k,S[k]);}else missing.push(k);
+  }
+  normalize();
+  missing.forEach(function(k){if(k==='salud'||hasLocal[k])save(k);});
+}
+async function initDb(){
+  try{DB=window.claude?await window.claude.use('db'):null;}catch(e){DB=null;}
+  if(!DB){storageMode='local';return;}
+  try{await loadFromDb();storageMode='nube';}catch(e){DB=null;storageMode='local';}
+  render();
+}
+document.addEventListener('visibilitychange',function(){
+  if(!document.hidden&&DB&&pendingWrites===0&&!document.querySelector('.sheet-back')){
+    loadFromDb().then(render).catch(function(){});
+  }
+});
+
+/* ---------- cálculos ---------- */
+function edadDias(f){return diffDays(f,S.config.llegada)+(+S.config.edadLlegadaDias||0);}
+function semanaDe(f){return Math.max(1,Math.floor(edadDias(f)/7)+1);}
+function fechaSemana(s){return addDays(S.config.llegada,(s-1)*7-(+S.config.edadLlegadaDias||0));}
+function fechaPrimerHuevo(){return addDays(S.config.llegada,(+S.config.semanaPostura)*7-(+S.config.edadLlegadaDias||0));}
+function faseDe(s){
+  var fs=S.config.fases.slice().sort(function(a,b){return a.desde-b.desde;});
+  var f=fs[0];fs.forEach(function(x){if(s>=x.desde)f=x;});return f;
+}
+function avesVivas(){return Math.max(0,(+S.config.avesIniciales||0)-sum(S.diario,'bajas'));}
+function stockLb(){return sum(S.compras,'libras')-sum(S.diario,'alimentoLb');}
+function consumoDiario(){
+  var corte=addDays(todayStr(),-10);
+  var rec=S.diario.filter(function(d){return d.fecha>=corte&&d.alimentoLb>0;});
+  if(rec.length>=3)return {lb:sum(rec,'alimentoLb')/rec.length,fuente:'registrado'};
+  var f=faseDe(semanaDe(todayStr()));
+  return {lb:avesVivas()*f.gramos/453.6,fuente:'esperado'};
+}
+function diasDeAlimento(){var c=consumoDiario();var st=stockLb();return c.lb>0?st/c.lb:null;}
+function huevosBuenos(){return sum(S.diario,'huevos')-sum(S.diario,'rotos');}
+function huevosDisponibles(){return huevosBuenos()-sum(S.ventas,'huevos');}
+function finanzas(){
+  var inv=0,op=sum(S.compras.filter(function(c){return c.tipo!=='ajuste';}),'costo');
+  S.gastos.forEach(function(g){if(CATS[g.categoria]==='inv')inv+=+g.monto||0;else op+=+g.monto||0;});
+  var ing=sum(S.ventas,'monto');
+  var docenas=huevosBuenos()/12;
+  return {inv:inv,op:op,ing:ing,neto:ing-inv-op,docenas:docenas,costoDocena:docenas>0?op/docenas:null};
+}
+
+/* ---------- iconos ---------- */
+var ICON={
+  inicio:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3c3.6 0 6.2 5.3 6.2 9.4A6.2 6.2 0 0 1 5.8 12.4C5.8 8.3 8.4 3 12 3z"/></svg>',
+  diario:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>',
+  alimento:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8 6 20h12L17 8"/><path d="M9 8c0-2 1-3 3-3s3 1 3 3M6.5 8h11"/><path d="M10 13h4"/></svg>',
+  dinero:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M14.6 9.6c-.6-1.2-4.6-1.4-4.6 1 0 2.6 5 1.6 5 4.2 0 2.2-4.2 2.2-5 .8"/></svg>',
+  salud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>',
+  x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>'
+};
+var TABS=[['inicio','Inicio'],['diario','Diario'],['alimento','Alimento'],['dinero','Dinero'],['salud','Salud']];
+var tab='inicio',moneyTab='ventas';
+document.getElementById('gear').innerHTML=ICON.gear;
+
+/* ---------- vistas ---------- */
+function cols(n){if(n<=6)return n||1;if(n%6===0)return 6;if(n%5===0&&n<=25)return 5;return 6;}
+function tray(n,filled,label){
+  n=Math.min(n,60);var h='<div class="tray" style="--cols:'+cols(n)+'" role="img" aria-label="'+esc(label)+'">';
+  for(var i=0;i<n;i++)h+='<span class="cell'+(i<filled?' egg':'')+'"></span>';
+  return h+'</div>';
+}
+function taskRow(t){
+  return '<div class="row task'+(t.hecho?' done':'')+'">'+
+    '<button class="check" data-act="tarea-toggle" data-id="'+t.id+'" aria-pressed="'+(t.hecho?'true':'false')+'" aria-label="'+(t.hecho?'Marcar como pendiente':'Marcar como hecha')+'"></button>'+
+    '<div class="row-main" data-act="tarea-edit" data-id="'+t.id+'"><strong>'+esc(t.nombre)+'</strong>'+
+    '<span class="muted">'+(t.hecho?'Hecha el '+fechaDia(t.fechaHecho||todayStr()):'Semana '+t.semana+' (desde el '+fechaDia(fechaSemana(t.semana))+')')+(t.tipo==='manejo'?', manejo':', sanidad')+'</span></div></div>';
+}
+function tareasOrdenadas(){
+  return S.salud.map(function(t){return Object.assign({},t,{fecha:fechaSemana(t.semana)});}).sort(function(a,b){return a.semana-b.semana||a.nombre.localeCompare(b.nombre);});
+}
+
+function vInicio(){
+  var hoy=todayStr(),c=S.config,aves=avesVivas(),sem=semanaDe(hoy),f=faseDe(sem);
+  var eHoy=S.diario.find(function(d){return d.fecha===hoy;});
+  var previos=S.diario.filter(function(d){return d.fecha<hoy;}).sort(byFechaDesc);
+  var hayHuevos=S.diario.some(function(d){return d.huevos>0;});
+  var big,bigCls='',label,sub='',extra='',filled=0;
+  if(eHoy){
+    filled=Math.min(eHoy.huevos,aves);big=eHoy.huevos;label=eHoy.huevos===1?'huevo hoy':'huevos hoy';
+    sub=aves?pct(eHoy.huevos/aves)+' de postura ('+eHoy.huevos+' huevos de '+aves+' gallinas)':'';
+  }else if(hayHuevos){
+    big='Sin registro';bigCls=' sm';label='de hoy todavía';
+    sub=previos[0]?'Último registro: '+previos[0].huevos+' huevos el '+fechaCorta(previos[0].fecha):'';
+  }else{
+    big='Semana '+sem;bigCls=' sm';label='Fase de '+f.nombre.toLowerCase();
+    var pe=fechaPrimerHuevo(),dias=diffDays(pe,hoy);
+    sub=dias>0?'Primer huevo estimado hacia el '+fechaDia(pe)+' (faltan '+dias+' días)':'Ya llegó la fecha estimada del primer huevo ('+fechaDia(pe)+'). Anótalo en el diario apenas aparezca.';
+    var total=Math.max(1,(+c.semanaPostura)*7),ed=Math.max(0,Math.min(total,edadDias(hoy)));
+    extra='<div class="prog" role="img" aria-label="Avance hacia la postura"><i style="width:'+Math.round(ed/total*100)+'%"></i></div><div class="prog-l"><span>Llegada '+fechaDia(c.llegada)+'</span><span>Primer huevo '+fechaDia(pe)+'</span></div>';
+  }
+  var h='<section class="hero"><div class="big'+bigCls+'">'+esc(big)+'</div><p class="big-label">'+esc(label)+'</p><p class="muted">'+esc(sub)+'</p>';
+  h+=aves>0?tray(aves,filled,filled+' de '+aves+' gallinas con huevo hoy'):'<p class="empty">No hay aves registradas. Ajusta la cantidad en Ajustes.</p>';
+  h+=extra+'<button class="btn wide" data-act="diario-hoy">'+(eHoy?'Editar el registro de hoy':'Registrar hoy')+'</button></section>';
+
+  // avisos
+  var av='';
+  var dA=diasDeAlimento();
+  if(S.compras.length&&dA!==null){
+    if(stockLb()<=0)av+='<p class="note"><b>Alimento:</b> las existencias calculadas están en cero. Si aún tienes, usa Ajustar existencias en la pestaña Alimento.</p>';
+    else if(dA<=c.alertaAlimentoDias)av+='<p class="note"><b>Alimento para unos '+Math.max(0,Math.floor(dA))+' días.</b> Conviene comprar antes del '+fechaDia(addDays(hoy,Math.max(0,Math.floor(dA))))+'.</p>';
+  }
+  var tareas=tareasOrdenadas();
+  var prox=tareas.filter(function(t){return !t.hecho&&t.fecha>=addDays(hoy,-6)&&t.fecha<=addDays(hoy,21);}).slice(0,4);
+  var pasadas=tareas.filter(function(t){return !t.hecho&&t.fecha<addDays(hoy,-6);}).length;
+  if(av)h+='<section class="block">'+av+'</section>';
+  if(prox.length||pasadas){
+    h+='<section class="block"><h2>Lo que viene</h2>'+prox.map(taskRow).join('');
+    if(!prox.length)h+='<p class="empty">Nada programado para las próximas 3 semanas.</p>';
+    if(pasadas)h+='<p class="muted" style="margin-top:8px">'+pasadas+(pasadas===1?' tarea de semanas pasadas sigue':' tareas de semanas pasadas siguen')+' sin marcar. <button class="link" data-act="tab" data-tab="salud">Revisar en Salud</button></p>';
+    h+='</section>';
+  }
+  var fz=finanzas(),st=stockLb();
+  h+='<section class="block"><h2>Resumen</h2><div class="figs">'+
+    '<div class="fig"><b>'+aves+'</b><span>aves vivas de '+c.avesIniciales+'</span></div>'+
+    '<div class="fig"><b>'+(S.compras.length?fmt(Math.max(0,st),1)+' lb':'Sin datos')+'</b><span>alimento en existencia</span></div>'+
+    (hayHuevos?'<div class="fig"><b>'+fmt(Math.max(0,huevosDisponibles()))+'</b><span>huevos disponibles</span></div>':'<div class="fig"><b>'+money(fz.inv+fz.op)+'</b><span>gastado hasta hoy</span></div>')+
+    '<div class="fig"><b class="'+(fz.neto>=0?'pos':'neg')+'">'+money(fz.neto)+'</b><span>balance acumulado</span></div>'+
+    '</div></section>';
+  return h;
+}
+
+function chart14(){
+  var hoy=todayStr(),aves=avesVivas(),days=[],i;
+  for(i=13;i>=0;i--){var f=addDays(hoy,-i);var e=S.diario.find(function(d){return d.fecha===f;});days.push({f:f,v:e?e.huevos:null});}
+  var max=Math.max(1,aves,Math.max.apply(null,days.map(function(d){return d.v||0;})));
+  var W=320,H=110,slot=W/14,bw=slot-6,top=16,base=H-18,s='<svg class="chart" viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Huevos por día, últimos 14 días">';
+  days.forEach(function(d,idx){
+    var x=idx*slot+3;
+    if(d.v==null){s+='<rect class="bar0" x="'+x+'" y="'+(base-3)+'" width="'+bw+'" height="3" rx="1.5"/>';}
+    else{var bh=Math.max(3,(d.v/max)*(base-top));s+='<rect class="bar" x="'+x+'" y="'+(base-bh)+'" width="'+bw+'" height="'+bh+'" rx="3"/>';
+      if(d.v>0)s+='<text x="'+(x+bw/2)+'" y="'+(base-bh-3)+'" text-anchor="middle">'+d.v+'</text>';}
+  });
+  s+='<text x="0" y="'+(H-3)+'">'+fechaDia(days[0].f)+'</text><text x="'+W+'" y="'+(H-3)+'" text-anchor="end">hoy</text></svg>';
+  return s;
+}
+
+function vDiario(){
+  var hoy=todayStr(),lista=S.diario.slice().sort(byFechaDesc),aves=avesVivas();
+  var hayHuevos=S.diario.some(function(d){return d.huevos>0;});
+  var h='<section class="block"><div class="block-head"><h2>Registro diario</h2><button class="btn small" data-act="diario-new">Nuevo registro</button></div>';
+  if(!lista.length){
+    h+='<p class="empty">Aún no hay registros. Anota cada día el alimento que les diste, los huevos que recogiste y cualquier cosa que notes en las gallinas.</p></section>';
+    return h;
+  }
+  var desde=addDays(hoy,-6),sem=S.diario.filter(function(d){return d.fecha>=desde;});
+  var conHuevos=sem.filter(function(d){return d.huevos!=null;});
+  h+='<div class="figs">';
+  if(hayHuevos){
+    h+='<div class="fig"><b>'+sum(sem,'huevos')+'</b><span>huevos en 7 días</span></div>';
+    h+='<div class="fig"><b>'+(aves&&conHuevos.length?pct(sum(conHuevos,'huevos')/conHuevos.length/aves):'–')+'</b><span>postura promedio</span></div>';
+  }
+  h+='<div class="fig"><b>'+fmt(sum(sem,'alimentoLb'),1)+' lb</b><span>alimento en 7 días</span></div>';
+  h+='<div class="fig"><b>'+sum(S.diario,'bajas')+'</b><span>bajas en total</span></div></div></section>';
+  if(hayHuevos)h+='<section class="block"><h2>Huevos por día</h2>'+chart14()+'</section>';
+  h+='<section class="block"><h2>Historial</h2>';
+  h+=lista.map(function(d){
+    var partes=[];
+    if(d.alimentoLb>0)partes.push('Alimento '+fmt(d.alimentoLb,1)+' lb');
+    if(d.bajas>0)partes.push(d.bajas+(d.bajas===1?' baja':' bajas'));
+    if(d.rotos>0)partes.push(d.rotos+' rotos');
+    var det=partes.join(', ');
+    return '<div class="row" data-act="diario-edit" data-id="'+d.id+'"><div class="row-main"><strong>'+fechaCorta(d.fecha)+(d.fecha===hoy?' (hoy)':'')+'</strong>'+
+      (det?'<span class="muted">'+esc(det)+'</span>':'')+(d.nota?'<span class="muted">'+esc(d.nota)+'</span>':'')+'</div>'+
+      (hayHuevos?'<div class="row-side">'+d.huevos+'<span class="muted">huevos</span></div>':'')+'</div>';
+  }).join('');
+  return h+'</section>';
+}
+
+function vAlimento(){
+  var hoy=todayStr(),st=stockLb(),cons=consumoDiario(),dias=diasDeAlimento(),aves=avesVivas(),f=faseDe(semanaDe(hoy));
+  var h='<section class="block"><h2>Existencias</h2>';
+  if(!S.compras.length){
+    h+='<p class="empty">Registra tu primera compra de alimento para calcular cuánto queda y cuándo te toca comprar de nuevo.</p>';
+  }else{
+    h+='<div class="figs"><div class="fig"><b>'+fmt(Math.max(0,st),1)+' lb</b><span>calculadas hoy</span></div>'+
+      '<div class="fig"><b>'+(dias!==null&&st>0?'~'+Math.floor(dias)+' días':'–')+'</b><span>de alimento restante</span></div></div>';
+    if(dias!==null&&st>0)h+='<p class="muted" style="margin-top:12px">Consumo de '+fmt(cons.lb,1)+' lb al día ('+cons.fuente+'). Se acaba hacia el '+fechaDia(addDays(hoy,Math.floor(dias)))+'.</p>';
+    if(cons.fuente==='esperado')h+='<p class="muted">Para que el cálculo use tu consumo real, anota el alimento dado en el diario.</p>';
+  }
+  h+='<div class="btn-row" style="margin-top:14px"><button class="btn" data-act="compra-new">Registrar compra</button><button class="btn ghost" data-act="ajuste-stock">Ajustar existencias</button></div></section>';
+  var g=aves>0?cons.lb*453.6/aves:0;
+  h+='<section class="block"><h2>Fase actual: '+esc(f.nombre)+'</h2><div class="figs">'+
+    '<div class="fig"><b>'+f.gramos+' g</b><span>esperado por ave al día</span></div>'+
+    '<div class="fig"><b>'+(cons.fuente==='registrado'?Math.round(g)+' g':'–')+'</b><span>real por ave al día</span></div></div></section>';
+  var comp=S.compras.filter(function(c){return c.tipo!=='ajuste'&&c.libras>0&&c.costo>0;});
+  if(comp.length)h+='<section class="block"><div class="figs"><div class="fig"><b>'+money(sum(comp,'costo')/sum(comp,'libras'))+'</b><span>precio promedio por libra</span></div><div class="fig"><b>'+money(sum(S.compras.filter(function(c){return c.tipo!=='ajuste';}),'costo'))+'</b><span>gastado en alimento</span></div></div></section>';
+  if(S.compras.length){
+    h+='<section class="block"><h2>Compras y ajustes</h2>'+S.compras.slice().sort(byFechaDesc).map(function(c){
+      var aj=c.tipo==='ajuste';
+      return '<div class="row" data-act="compra-edit" data-id="'+c.id+'"><div class="row-main"><strong>'+(aj?'Ajuste de existencias':esc(c.fase||'Alimento'))+'</strong><span class="muted">'+fechaCorta(c.fecha)+(c.proveedor?', '+esc(c.proveedor):'')+'</span></div>'+
+        '<div class="row-side">'+(c.libras>0&&aj?'+':'')+fmt(c.libras,1)+' lb'+(aj?'':'<span class="muted">'+money(c.costo)+'</span>')+'</div></div>';
+    }).join('')+'</section>';
+  }
+  return h;
+}
+
+function vDinero(){
+  var fz=finanzas(),c=S.config;
+  var h='<section class="block"><h2>Balance</h2><div class="fig"><b class="'+(fz.neto>=0?'pos':'neg')+'" style="font-size:40px">'+money(fz.neto)+'</b><span>ingresos menos todo lo invertido y gastado</span></div>'+
+    '<div class="figs" style="margin-top:16px"><div class="fig"><b>'+money(fz.inv)+'</b><span>inversión inicial</span></div><div class="fig"><b>'+money(fz.op)+'</b><span>gastos de operación</span></div><div class="fig"><b>'+money(fz.ing)+'</b><span>ingresos por ventas</span></div><div class="fig"><b>'+fmt(Math.max(0,huevosDisponibles()))+'</b><span>huevos disponibles</span></div></div></section>';
+  if(fz.docenas>0){
+    var ventasPagas=S.ventas.filter(function(v){return v.monto>0&&v.huevos>0;});
+    var prom=ventasPagas.length?sum(ventasPagas,'monto')/(sum(ventasPagas,'huevos')/12):null;
+    h+='<section class="block"><h2>Costo y precio por docena</h2><div class="figs">'+
+      '<div class="fig"><b>'+money(fz.costoDocena)+'</b><span>costo de operación por docena</span></div>'+
+      '<div class="fig"><b>'+(prom!==null?money(prom):'–')+'</b><span>precio promedio cobrado</span></div>'+
+      '<div class="fig"><b>'+money(c.precioDocena)+'</b><span>precio de referencia</span></div>'+
+      '<div class="fig"><b class="'+(c.precioDocena-fz.costoDocena>=0?'pos':'neg')+'">'+money(c.precioDocena-fz.costoDocena)+'</b><span>ganancia por docena a ese precio</span></div></div></section>';
+  }
+  h+='<section class="block"><div class="seg" role="group" aria-label="Sección"><button data-act="money-tab" data-tab="ventas" aria-pressed="'+(moneyTab==='ventas')+'">Ventas</button><button data-act="money-tab" data-tab="gastos" aria-pressed="'+(moneyTab==='gastos')+'">Gastos</button></div>';
+  if(moneyTab==='ventas'){
+    h+='<div class="block-head"><h2>Ventas</h2><button class="btn small" data-act="venta-new">Nueva venta</button></div>';
+    var vs=S.ventas.slice().sort(byFechaDesc);
+    h+=vs.length?vs.map(function(v){
+      return '<div class="row" data-act="venta-edit" data-id="'+v.id+'"><div class="row-main"><strong>'+esc(v.cliente||'Sin cliente')+'</strong><span class="muted">'+fechaCorta(v.fecha)+', '+v.huevos+' huevos ('+fmt(v.huevos/12,1)+' docenas)</span></div><div class="row-side">'+(v.monto>0?money(v.monto):'Sin cobro')+'</div></div>';
+    }).join(''):'<p class="empty">Todavía no hay ventas. Registra también los huevos que regalas o consumes para que las existencias cuadren.</p>';
+  }else{
+    h+='<div class="block-head"><h2>Gastos</h2><button class="btn small" data-act="gasto-new">Nuevo gasto</button></div><p class="muted" style="margin:-4px 0 8px">Las compras de alimento se registran en la pestaña Alimento y se suman solas.</p>';
+    var gs=S.gastos.slice().sort(byFechaDesc);
+    h+=gs.length?gs.map(function(g){
+      return '<div class="row" data-act="gasto-edit" data-id="'+g.id+'"><div class="row-main"><strong>'+esc(g.descripcion||g.categoria)+'</strong><span class="muted">'+fechaCorta(g.fecha)+', '+esc(g.categoria)+'</span></div><div class="row-side">'+money(g.monto)+'</div></div>';
+    }).join(''):'<p class="empty">Registra aquí las pollitas, el zinc, la malla, vacunas y todo lo demás que hayas pagado.</p>';
+  }
+  return h+'</section>';
+}
+
+function vSalud(){
+  var hoy=todayStr(),t=tareasOrdenadas();
+  var prox=t.filter(function(x){return !x.hecho&&x.fecha>=addDays(hoy,-6);});
+  var pas=t.filter(function(x){return !x.hecho&&x.fecha<addDays(hoy,-6);});
+  var hec=t.filter(function(x){return x.hecho;});
+  var ini=+S.config.avesIniciales||0,baj=sum(S.diario,'bajas');
+  var h='<section class="block"><h2>Bandada</h2><div class="figs"><div class="fig"><b>'+avesVivas()+'</b><span>aves vivas</span></div><div class="fig"><b>'+baj+'</b><span>bajas registradas</span></div><div class="fig"><b>'+(ini?pct(baj/ini):'–')+'</b><span>mortalidad acumulada</span></div><div class="fig"><b>'+semanaDe(hoy)+'</b><span>semana de vida</span></div></div></section>';
+  h+='<section class="block"><div class="block-head"><h2>Calendario</h2><button class="btn small" data-act="tarea-new">Agregar</button></div><p class="note">Es un calendario de referencia general. Confírmalo con tu veterinario o con el plan de quien te vendió las pollitas, y ajústalo aquí.</p>';
+  h+=prox.length?'<div class="sect">Próximas</div>'+prox.map(taskRow).join(''):'<p class="empty">No hay tareas próximas.</p>';
+  if(pas.length)h+='<div class="sect">De semanas pasadas sin marcar</div><p class="muted">Márcalas si ya las hiciste, o elimínalas si no aplican.</p>'+pas.map(taskRow).join('');
+  if(hec.length)h+='<div class="sect">Hechas</div>'+hec.map(taskRow).join('');
+  return h+'</section>';
+}
+
+var VIEWS={inicio:vInicio,diario:vDiario,alimento:vAlimento,dinero:vDinero,salud:vSalud};
+function render(){
+  var c=S.config,hoy=todayStr(),sem=semanaDe(hoy),f=faseDe(sem);
+  document.getElementById('title').textContent=c.nombre||'Ponedoras';
+  document.getElementById('subtitle').textContent='Semana '+sem+', fase de '+f.nombre.toLowerCase()+', '+avesVivas()+' aves';
+  document.title=c.nombre||'Ponedoras';
+  document.getElementById('main').innerHTML=VIEWS[tab]();
+  document.getElementById('tabs').innerHTML=TABS.map(function(t){
+    return '<button class="tab" data-act="tab" data-tab="'+t[0]+'"'+(tab===t[0]?' aria-current="page"':'')+'><span class="ic">'+ICON[t[0]]+'</span>'+t[1]+'</button>';
+  }).join('');
+}
+
+/* ---------- toast y hojas de formulario ---------- */
+var toastT=null;
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){el.classList.remove('show');},3200);}
+var sheetEl=null;
+function closeSheet(){if(sheetEl){sheetEl.remove();sheetEl=null;document.body.classList.remove('lock');}}
+function readFields(root){var o={};root.querySelectorAll('[name]').forEach(function(el){o[el.name]=el.value;});return o;}
+function openSheet(o){
+  closeSheet();
+  var back=document.createElement('div');back.className='sheet-back';
+  back.innerHTML='<div class="sheet" role="dialog" aria-modal="true" aria-label="'+esc(o.title)+'"><div class="sheet-head"><h2>'+esc(o.title)+'</h2><button class="icon-btn" data-sheet="close" aria-label="Cerrar">'+ICON.x+'</button></div>'+
+    '<div>'+o.body+'</div><p class="err" id="err" role="alert"></p><div class="sheet-actions">'+
+    (o.onSubmit?'<button class="btn" data-sheet="submit">'+esc(o.submit||'Guardar')+'</button>':'')+
+    (o.onDelete?'<button class="btn danger" data-sheet="delete">'+esc(o.deleteLabel||'Eliminar')+'</button>':'')+'</div></div>';
+  document.body.appendChild(back);sheetEl=back;document.body.classList.add('lock');
+  back.addEventListener('click',function(e){
+    if(e.target===back)return closeSheet();
+    var st=e.target.closest('.step');
+    if(st){var inp=st.parentElement.querySelector('input');var v=num(inp.value)+parseFloat(st.dataset.step);inp.value=Math.round(Math.max(inp.min===''?-1e9:0,v)*100)/100;return;}
+    var chip=e.target.closest('[data-chip]');
+    if(chip){var ta=back.querySelector('[name="nota"]');var t=chip.dataset.chip;if(ta&&ta.value.indexOf(t)===-1)ta.value=ta.value?ta.value.replace(/[\s,]+$/,'')+', '+t:t;return;}
+    var fill=e.target.closest('[data-fill]');
+    if(fill){var p=fill.dataset.fill.split('=');var el=back.querySelector('[name="'+p[0]+'"]');if(el)el.value=p[1];return;}
+    var b=e.target.closest('[data-sheet]');if(!b)return;
+    var a=b.dataset.sheet;
+    if(a==='close')return closeSheet();
+    if(a==='submit'){var r=o.onSubmit(readFields(back));if(typeof r==='string'){back.querySelector('#err').textContent=r;return;}closeSheet();}
+    if(a==='delete'){
+      if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='Toca otra vez para confirmar';return;}
+      o.onDelete();closeSheet();
+    }
+  });
+  var first=back.querySelector('input:not([type=date]),textarea');if(first&&!/Android|iPhone|iPad/.test(navigator.userAgent))first.focus();
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
+
+var F={
+  text:function(n,l,v,a){return '<div class="fld"><label for="f_'+n+'">'+l+'</label><input class="inp" id="f_'+n+'" name="'+n+'" value="'+esc(v==null?'':v)+'" '+(a||'')+'></div>';},
+  date:function(n,l,v){return '<div class="fld"><label for="f_'+n+'">'+l+'</label><input class="inp" type="date" id="f_'+n+'" name="'+n+'" value="'+esc(v)+'"></div>';},
+  number:function(n,l,v,o){o=o||{};var st=o.step||1;return '<div class="fld"><label for="f_'+n+'">'+l+'</label><div class="stepper"><button type="button" class="step" data-step="-'+st+'" aria-label="Menos">\u2212</button><input class="inp" id="f_'+n+'" name="'+n+'" type="number" inputmode="decimal" step="any"'+(o.neg?'':' min="0"')+' value="'+(v===''||v==null?'':v)+'" placeholder="0"><button type="button" class="step" data-step="'+st+'" aria-label="Más">+</button></div>'+(o.hint?'<span class="hint">'+o.hint+'</span>':'')+'</div>';},
+  plain:function(n,l,v,o){o=o||{};return '<div class="fld"><label for="f_'+n+'">'+l+'</label><input class="inp" id="f_'+n+'" name="'+n+'" type="number" inputmode="decimal" step="any"'+(o.neg?'':' min="0"')+' value="'+(v===''||v==null?'':v)+'">'+(o.hint?'<span class="hint">'+o.hint+'</span>':'')+'</div>';},
+  select:function(n,l,opts,v){return '<div class="fld"><label for="f_'+n+'">'+l+'</label><select class="inp" id="f_'+n+'" name="'+n+'">'+opts.map(function(o){return '<option'+(o===v?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select></div>';},
+  area:function(n,l,v){return '<div class="fld"><label for="f_'+n+'">'+l+'</label><textarea class="inp" id="f_'+n+'" name="'+n+'" maxlength="300">'+esc(v||'')+'</textarea></div>';}
+};
+
+/* --- diario --- */
+function sheetDiario(id,fechaIni){
+  var e=id?S.diario.find(function(d){return d.id===id;}):S.diario.find(function(d){return d.fecha===fechaIni;});
+  var eid=e?e.id:null;
+  var chips=['Calor fuerte','Lluvia','Comieron poco','Picaje','Diarrea'].map(function(c){return '<button type="button" class="chip" data-chip="'+c+'">'+c+'</button>';}).join('');
+  openSheet({
+    title:eid?'Editar registro':'Nuevo registro',
+    body:F.date('fecha','Fecha',e?e.fecha:(fechaIni||todayStr()))+
+      F.number('huevos','Huevos recogidos',e?e.huevos:'')+
+      F.number('rotos','Rotos o descartados (ya incluidos arriba)',e?e.rotos:'')+
+      F.number('bajas','Bajas (aves muertas o perdidas)',e?e.bajas:'')+
+      F.number('alimentoLb','Alimento dado (libras)',e?e.alimentoLb:'',{step:0.5})+
+      F.area('nota','Observaciones',e?e.nota:'')+'<div class="chips" style="margin:-8px 0 8px">'+chips+'</div>',
+    onSubmit:function(v){
+      if(!v.fecha)return 'Elige una fecha.';
+      var d={fecha:v.fecha,huevos:Math.round(num(v.huevos)),rotos:Math.round(num(v.rotos)),bajas:Math.round(num(v.bajas)),alimentoLb:num(v.alimentoLb),nota:(v.nota||'').trim()};
+      if(d.rotos>d.huevos)return 'Los rotos no pueden ser más que los huevos recogidos.';
+      var dup=S.diario.find(function(x){return x.fecha===d.fecha&&x.id!==eid;});
+      if(dup){Object.assign(dup,d);if(eid)S.diario=S.diario.filter(function(x){return x.id!==eid;});}
+      else if(eid){Object.assign(S.diario.find(function(x){return x.id===eid;}),d);}
+      else S.diario.push(Object.assign({id:uid()},d));
+      commit('diario');toast('Registro guardado');
+    },
+    onDelete:eid?function(){S.diario=S.diario.filter(function(x){return x.id!==eid;});commit('diario');toast('Registro eliminado');}:null,
+    deleteLabel:'Eliminar registro'
+  });
+}
+
+/* --- compras de alimento --- */
+function sheetCompra(id){
+  var e=id?S.compras.find(function(c){return c.id===id;}):null;
+  if(e&&e.tipo==='ajuste'){
+    openSheet({title:'Ajuste de existencias',body:F.date('fecha','Fecha',e.fecha)+F.plain('libras','Libras sumadas o restadas',e.libras,{neg:true,hint:'Un número negativo resta.'}),
+      onSubmit:function(v){if(!v.fecha)return 'Elige una fecha.';e.fecha=v.fecha;e.libras=num(v.libras);commit('compras');},
+      onDelete:function(){S.compras=S.compras.filter(function(c){return c.id!==id;});commit('compras');},deleteLabel:'Eliminar ajuste'});
+    return;
+  }
+  var fases=S.config.fases.map(function(f){return f.nombre;}).concat(['Otro']);
+  var fdef=e?e.fase:faseDe(semanaDe(todayStr())).nombre;
+  openSheet({
+    title:e?'Editar compra':'Registrar compra',
+    body:F.date('fecha','Fecha',e?e.fecha:todayStr())+F.select('fase','Tipo de alimento',fases,fdef)+
+      F.number('libras','Libras compradas',e?e.libras:'',{step:22,hint:'Un saco de 88 lb se escribe como 88.'})+
+      F.plain('costo','Costo total (B/.)',e?e.costo:'')+F.text('proveedor','Proveedor (opcional)',e?e.proveedor:''),
+    onSubmit:function(v){
+      if(!v.fecha)return 'Elige una fecha.';
+      var lb=num(v.libras);if(lb<=0)return 'Escribe cuántas libras compraste.';
+      var d={tipo:'compra',fecha:v.fecha,fase:v.fase,libras:lb,costo:num(v.costo),proveedor:(v.proveedor||'').trim()};
+      if(e)Object.assign(e,d);else S.compras.push(Object.assign({id:uid()},d));
+      commit('compras');toast('Compra guardada');
+    },
+    onDelete:e?function(){S.compras=S.compras.filter(function(c){return c.id!==id;});commit('compras');}:null,deleteLabel:'Eliminar compra'
+  });
+}
+function sheetAjuste(){
+  var est=Math.max(0,Math.round(stockLb()*10)/10);
+  openSheet({title:'Ajustar existencias',
+    body:'<p class="muted" style="margin:0 0 12px">Pesa o cuenta lo que tienes ahora y escríbelo. La app guarda la diferencia como un ajuste, sin costo.</p>'+F.number('real','Libras que hay ahora',est,{step:1,hint:'Calculado: '+fmt(stockLb(),1)+' lb'}),
+    submit:'Ajustar',
+    onSubmit:function(v){
+      var real=num(v.real),delta=Math.round((real-stockLb())*100)/100;
+      if(delta===0)return 'Ese valor ya coincide con lo calculado.';
+      S.compras.push({id:uid(),tipo:'ajuste',fecha:todayStr(),fase:'',libras:delta,costo:0,proveedor:''});
+      commit('compras');toast('Existencias ajustadas');
+    }});
+}
+
+/* --- ventas y gastos --- */
+function sheetVenta(id){
+  var e=id?S.ventas.find(function(v){return v.id===id;}):null;
+  var fills='<div class="chips" style="margin:-8px 0 12px"><button type="button" class="chip" data-fill="huevos=12">1 docena</button><button type="button" class="chip" data-fill="huevos=30">Paca de 30</button></div>';
+  openSheet({title:e?'Editar venta':'Nueva venta',
+    body:F.date('fecha','Fecha',e?e.fecha:todayStr())+F.text('cliente','Cliente',e?e.cliente:'')+F.number('huevos','Huevos entregados',e?e.huevos:'',{step:6})+fills+
+      F.plain('monto','Total cobrado (B/.)',e?e.monto:'',{hint:'Para huevos regalados o de consumo propio, déjalo en 0.'}),
+    onSubmit:function(v){
+      if(!v.fecha)return 'Elige una fecha.';
+      var n=Math.round(num(v.huevos));if(n<=0)return 'Escribe cuántos huevos entregaste.';
+      var d={fecha:v.fecha,cliente:(v.cliente||'').trim(),huevos:n,monto:num(v.monto)};
+      if(e)Object.assign(e,d);else S.ventas.push(Object.assign({id:uid()},d));
+      commit('ventas');toast('Venta guardada');
+    },
+    onDelete:e?function(){S.ventas=S.ventas.filter(function(v){return v.id!==id;});commit('ventas');}:null,deleteLabel:'Eliminar venta'});
+}
+function sheetGasto(id){
+  var e=id?S.gastos.find(function(g){return g.id===id;}):null;
+  openSheet({title:e?'Editar gasto':'Nuevo gasto',
+    body:F.date('fecha','Fecha',e?e.fecha:todayStr())+F.select('categoria','Categoría',Object.keys(CATS),e?e.categoria:'Infraestructura')+
+      F.text('descripcion','Descripción',e?e.descripcion:'','placeholder="Ej.: zinc para el techo"')+F.plain('monto','Monto (B/.)',e?e.monto:''),
+    onSubmit:function(v){
+      if(!v.fecha)return 'Elige una fecha.';
+      var m=num(v.monto);if(m<=0)return 'Escribe el monto.';
+      var d={fecha:v.fecha,categoria:v.categoria,descripcion:(v.descripcion||'').trim(),monto:m};
+      if(e)Object.assign(e,d);else S.gastos.push(Object.assign({id:uid()},d));
+      commit('gastos');toast('Gasto guardado');
+    },
+    onDelete:e?function(){S.gastos=S.gastos.filter(function(g){return g.id!==id;});commit('gastos');}:null,deleteLabel:'Eliminar gasto'});
+}
+
+/* --- salud --- */
+function sheetTarea(id){
+  var e=id?S.salud.find(function(t){return t.id===id;}):null;
+  openSheet({title:e?'Editar tarea':'Nueva tarea',
+    body:F.text('nombre','Qué hay que hacer',e?e.nombre:'')+F.plain('semana','Semana de vida',e?e.semana:semanaDe(todayStr()),{hint:'La fecha se calcula desde la llegada de las aves.'})+F.select('tipo','Tipo',['sanidad','manejo'],e?e.tipo:'sanidad')+F.area('nota','Nota',e?e.nota:''),
+    onSubmit:function(v){
+      var n=(v.nombre||'').trim();if(!n)return 'Escribe el nombre de la tarea.';
+      var s=Math.round(num(v.semana));if(s<1)return 'La semana debe ser 1 o más.';
+      var d={nombre:n,semana:s,tipo:v.tipo,nota:(v.nota||'').trim()};
+      if(e)Object.assign(e,d);else S.salud.push(Object.assign({id:uid(),hecho:false,fechaHecho:''},d));
+      commit('salud');
+    },
+    onDelete:e?function(){S.salud=S.salud.filter(function(t){return t.id!==id;});commit('salud');}:null,deleteLabel:'Eliminar tarea'});
+}
+
+/* --- ajustes --- */
+function csvCell(x){x=String(x==null?'':x);return /[",\n]/.test(x)?'"'+x.replace(/"/g,'""')+'"':x;}
+async function descargar(nombre,data){
+  var dl=null;try{dl=await window.claude.use('downloads');}catch(e){}
+  if(!dl){
+    try{var b=new Blob([data],{type:'text/plain;charset=utf-8'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nombre;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href);},4000);}
+    catch(e){toast('No se pudo descargar el archivo.');}
+    return;
+  }
+  try{await dl.save({filename:nombre,data:data});}catch(e){if(!e||e.code!=='declined')toast('No se pudo descargar el archivo.');}
+}
+function sheetAjustes(){
+  var c=S.config;
+  var fasesH=c.fases.map(function(f,i){return '<div class="two"><div class="fld"><label>'+esc(f.nombre)+': desde la semana</label><input class="inp" name="fd'+i+'" type="number" inputmode="numeric" min="1" value="'+f.desde+'"></div><div class="fld"><label>Gramos por ave al día</label><input class="inp" name="fg'+i+'" type="number" inputmode="decimal" min="0" value="'+f.gramos+'"></div></div>';}).join('');
+  openSheet({title:'Ajustes',submit:'Guardar ajustes',
+    body:F.text('nombre','Nombre del proyecto',c.nombre)+F.date('llegada','Fecha de llegada de las aves',c.llegada)+
+      '<div class="two">'+F.plain('edadLlegadaDias','Edad al llegar (días)',c.edadLlegadaDias)+F.plain('avesIniciales','Aves iniciales',c.avesIniciales)+'</div>'+
+      F.plain('semanaPostura','Edad esperada del primer huevo (semanas)',c.semanaPostura,{hint:'Estimado hacia el '+fechaDia(fechaPrimerHuevo())+'.'})+
+      F.plain('precioDocena','Precio de referencia por docena (B/.)',c.precioDocena)+
+      F.plain('alertaAlimentoDias','Avisar cuando el alimento alcance para (días)',c.alertaAlimentoDias)+
+      '<div class="sect">Fases de alimentación</div>'+fasesH+
+      '<div class="sect">Datos</div><p class="muted" style="margin:0 0 10px">'+(storageMode==='nube'?'Tus datos se guardan en tu cuenta y se sincronizan entre dispositivos.':'Tus datos se guardan solo en este dispositivo.')+'</p>'+
+      '<div class="btn-row"><button type="button" class="btn ghost small" data-sheet-run="json">Respaldo (JSON)</button><button type="button" class="btn ghost small" data-sheet-run="csv">Diario (CSV)</button></div>',
+    onSubmit:function(v){
+      var a=Math.round(num(v.avesIniciales));if(a<1)return 'Escribe cuántas aves tenías al inicio.';
+      if(!v.llegada)return 'Elige la fecha de llegada.';
+      var fases=c.fases.map(function(f,i){return Object.assign({},f,{desde:Math.max(1,Math.round(num(v['fd'+i]))),gramos:Math.max(0,num(v['fg'+i]))});});
+      S.config=Object.assign({},c,{nombre:(v.nombre||'').trim()||'Ponedoras',llegada:v.llegada,edadLlegadaDias:Math.max(0,Math.round(num(v.edadLlegadaDias))),avesIniciales:a,semanaPostura:Math.max(1,Math.round(num(v.semanaPostura))),precioDocena:num(v.precioDocena),alertaAlimentoDias:Math.max(0,Math.round(num(v.alertaAlimentoDias))),fases:fases});
+      commit('config');toast('Ajustes guardados');
+    },
+    onDelete:function(){
+      S.diario=[];S.compras=[];S.gastos=[];S.ventas=[];S.salud=seedSalud();
+      KEYS.forEach(function(k){save(k);});render();toast('Se borraron los registros');
+    },deleteLabel:'Borrar todos los registros'});
+  sheetEl.addEventListener('click',function(e){
+    var r=e.target.closest('[data-sheet-run]');if(!r)return;
+    if(r.dataset.sheetRun==='json')descargar('ponedoras-respaldo-'+todayStr()+'.json',JSON.stringify(Object.assign({version:1,exportado:new Date().toISOString()},S),null,2));
+    else descargar('ponedoras-diario-'+todayStr()+'.csv','\ufeff'+['fecha,huevos,rotos,bajas,alimento_lb,nota'].concat(S.diario.slice().sort(function(a,b){return a.fecha<b.fecha?-1:1;}).map(function(d){return [d.fecha,d.huevos,d.rotos,d.bajas,d.alimentoLb,d.nota].map(csvCell).join(',');})).join('\n'));
+  });
+}
+
+/* ---------- acciones ---------- */
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-act]');if(!el||el.closest('.sheet-back'))return;
+  var a=el.dataset.act,id=el.dataset.id;
+  if(a==='tab'){tab=el.dataset.tab;render();window.scrollTo(0,0);}
+  else if(a==='settings')sheetAjustes();
+  else if(a==='diario-hoy')sheetDiario(null,todayStr());
+  else if(a==='diario-new')sheetDiario(null,null);
+  else if(a==='diario-edit')sheetDiario(id);
+  else if(a==='compra-new')sheetCompra();
+  else if(a==='compra-edit')sheetCompra(id);
+  else if(a==='ajuste-stock')sheetAjuste();
+  else if(a==='venta-new')sheetVenta();
+  else if(a==='venta-edit')sheetVenta(id);
+  else if(a==='gasto-new')sheetGasto();
+  else if(a==='gasto-edit')sheetGasto(id);
+  else if(a==='money-tab'){moneyTab=el.dataset.tab;render();}
+  else if(a==='tarea-new')sheetTarea();
+  else if(a==='tarea-edit')sheetTarea(id);
+  else if(a==='tarea-toggle'){
+    var t=S.salud.find(function(x){return x.id===id;});
+    if(t){t.hecho=!t.hecho;t.fechaHecho=t.hecho?todayStr():'';commit('salud');}
+  }
+});
+
+/* ---------- arranque ---------- */
+KEYS.forEach(function(k){var v=lsGet(k);if(v!==null){S[k]=v;hasLocal[k]=true;}});
+normalize();
+render();
+initDb();
+})();
+</script>
+</body>
+</html>
